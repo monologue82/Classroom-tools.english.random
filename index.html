@@ -1,0 +1,769 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100%;
+            background-color: #e6f7f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(102, 217, 232, 0.15);
+            z-index: 0;
+            transition: all 0.4s ease;
+        }
+        body::before {
+            width: 350px;
+            height: 350px;
+            top: 10%;
+            left: -100px;
+        }
+        body::after {
+            width: 280px;
+            height: 280px;
+            bottom: 15%;
+            right: -80px;
+        }
+        .bg-shape {
+            position: absolute;
+            background: rgba(102, 217, 232, 0.1);
+            z-index: 0;
+            transition: all 0.5s ease;
+        }
+        .shape1 {
+            width: 140px;
+            height: 140px;
+            border-radius: 20px;
+            top: 25%;
+            right: 12%;
+            transform: rotate(25deg);
+        }
+        .shape2 {
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            bottom: 30%;
+            left: 10%;
+            transform: rotate(-15deg);
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1600px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 30px rgba(0, 179, 210, 0.08);
+            animation: containerFade 0.6s ease forwards;
+            opacity: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes containerFade {
+            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(20px); }
+        }
+
+        .title {
+            text-align: center;
+            font-size: 34px;
+            color: #0d6b78;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .control-panel {
+            background: #f2fcfd;
+            padding: 22px;
+            border-radius: 14px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease 0.2s forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .toggle-group {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .toggle-btn {
+            padding: 10px 24px;
+            font-size: 17px;
+            margin: 0 6px;
+            border: 2px solid #26c6da;
+            background: white;
+            color: #0097a7;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toggle-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            transition: left 0.3s ease;
+        }
+
+        .toggle-btn:hover::after {
+            left: 100%;
+        }
+
+        .toggle-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .toggle-btn.active {
+            background: #26c6da;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(38,198,218,0.2);
+        }
+
+        .selectors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .selector-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 14px;
+            border-radius: 9px;
+            border: 1px solid #d1f1f5;
+            transition: all 0.25s ease;
+            animation: selectorAdd 0.3s ease forwards;
+            position: relative;
+        }
+
+        @keyframes selectorAdd {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .selector-item:hover {
+            border-color: #26c6da;
+            box-shadow: 0 2px 8px rgba(38,198,218,0.12);
+            transform: translateY(-1px);
+        }
+
+        /* 自定义下拉框核心样式 */
+        .custom-select {
+            position: relative;
+            user-select: none;
+        }
+
+        .select-trigger {
+            padding: 8px 35px 8px 12px;
+            font-size: 16px;
+            border: 1px solid #b2ebf2;
+            border-radius: 6px;
+            outline: none;
+            transition: all 0.2s;
+            background: white;
+            cursor: pointer;
+            min-width: 110px;
+            position: relative;
+        }
+
+        .select-trigger::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #0097a7;
+            transition: transform 0.2s ease;
+        }
+
+        .select-trigger.open::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .select-options {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #b2ebf2;
+            border-radius: 6px;
+            list-style: none;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.25s ease;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .select-options.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            max-height: 200px;
+        }
+
+        .select-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .select-option:hover {
+            background: #e0f7fa;
+            color: #00838f;
+            padding-left: 15px;
+        }
+
+        .selector-item input {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #b2ebf2;
+            border-radius: 6px;
+            outline: none;
+            transition: all 0.2s;
+            width: 70px;
+            text-align: center;
+        }
+
+        .selector-item input:focus {
+            border-color: #26c6da;
+            box-shadow: 0 0 0 2px rgba(38,198,218,0.2);
+            transform: scale(1.03);
+        }
+
+        .del-btn {
+            color: #ff4d4f;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0 6px;
+            transition: all 0.2s ease;
+        }
+
+        .del-btn:hover {
+            transform: scale(1.15) rotate(90deg);
+            color: #d9363e;
+        }
+
+        .add-btn {
+            padding: 10px 20px;
+            background: #00bcd4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .add-btn:active::before {
+            width: 200px;
+            height: 200px;
+        }
+
+        .add-btn:hover {
+            background: #00acc1;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,188,212,0.15);
+        }
+
+        .draw-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto 40px;
+            padding: 18px 50px;
+            font-size: 24px;
+            background-color: #00bcd4;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,188,212,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .draw-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.5s ease, height 0.5s ease;
+        }
+
+        .draw-btn:active::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .draw-btn:hover {
+            background-color: #00acc1;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,188,212,0.25);
+        }
+
+        .draw-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+        }
+
+        .unit-box {
+            flex: 1;
+            min-width: 320px;
+            max-width: 440px;
+            animation: boxPop 0.5s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes boxPop {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .unit-title {
+            font-size: 25px;
+            color: #00838f;
+            margin-bottom: 18px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .phrase-item {
+            font-size: 21px;
+            line-height: 1.6;
+            padding: 13px 20px;
+            background-color: #e0f7fa;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.25s ease;
+            animation: itemFade 0.4s ease backwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes itemFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .phrase-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .phrase-item:hover::before {
+            left: 100%;
+        }
+
+        .phrase-item:hover {
+            background: #b2ebf2;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-shape shape1"></div>
+    <div class="bg-shape shape2"></div>
+
+    <div class="container">
+        <div class="title">八年级下册 单词·短语随机抽取</div>
+
+        <div class="control-panel">
+            <div class="toggle-group">
+                <button class="toggle-btn active" onclick="switchMode('all')">中英同时</button>
+                <button class="toggle-btn" onclick="switchMode('en')">仅英文</button>
+                <button class="toggle-btn" onclick="switchMode('cn')">仅中文</button>
+            </div>
+
+            <div id="selectorContainer" class="selectors"></div>
+            <button class="add-btn" onclick="addSelector()"><i class="fa-solid fa-plus"></i> 添加抽取单元</button>
+        </div>
+
+        <button class="draw-btn" onclick="startDraw()"><i class="fa-solid fa-shuffle"></i> 随机抽取</button>
+        <div id="resultWrapper" class="result-wrapper"></div>
+    </div>
+
+<script>
+const unitData = {
+  unit1: {
+    words: [
+      { en: "spiderman", cn: "蜘蛛人(高空作业人员)" },
+      { en: "wet", cn: "湿的" },
+      { en: "drop", cn: "滴" },
+      { en: "sweat", cn: "汗水" },
+      { en: "watermelon", cn: "西瓜" },
+      { en: "remind", cn: "使想起" },
+      { en: "newborn", cn: "新生的" },
+      { en: "brush", cn: "刷子" },
+      { en: "speech", cn: "演讲" },
+      { en: "challenging", cn: "富于挑战性的" },
+      { en: "context", cn: "语境" },
+      { en: "company", cn: "公司" },
+      { en: "interview", cn: "面试" },
+      { en: "communication", cn: "沟通" },
+      { en: "skill", cn: "技能" },
+      { en: "personality", cn: "个性" },
+      { en: "require", cn: "需要" },
+      { en: "organise", cn: "组织" },
+      { en: "throughout", cn: "自始至终" },
+      { en: "benefit", cn: "益处" },
+      { en: "leadership", cn: "领导才能" },
+      { en: "training", cn: "训练" },
+      { en: "cashier", cn: "出纳员" },
+      { en: "necessary", cn: "必要的" },
+      { en: "replace", cn: "替换" },
+      { en: "human", cn: "人类的" },
+      { en: "pilot", cn: "飞行员" },
+      { en: "autopilot", cn: "自动驾驶仪" },
+      { en: "tourism", cn: "旅游业" },
+      { en: "provide", cn: "提供" },
+      { en: "virtual", cn: "虚拟的" },
+      { en: "reality", cn: "现实" }
+    ],
+    phrases: [
+      { en: "on my last day at work", cn: "在我上班的最后一天" },
+      { en: "be filled with", cn: "充满；装满" },
+      { en: "in the air", cn: "在空中" },
+      { en: "all over", cn: "到处；遍及" },
+      { en: "cut...into...", cn: "把……切成……" },
+      { en: "smile at", cn: "对……微笑" },
+      { en: "be reminded of", cn: "被提醒" },
+      { en: "bit by bit", cn: "一点一点地" },
+      { en: "hold up", cn: "举起" },
+      { en: "a sense of achievement", cn: "成就感" },
+      { en: "say goodbye to", cn: "告别" },
+      { en: "clean up", cn: "清理" },
+      { en: "hold a job interview", cn: "举行求职面试" },
+      { en: "make sure", cn: "确保" },
+      { en: "encourage sb. to do sth.", cn: "鼓励某人做某事" },
+      { en: "in virtual reality", cn: "在虚拟现实中" }
+    ]
+  },
+  unit2: {
+    words: [
+      { en: "promise", cn: "许诺" },
+      { en: "interrupt", cn: "打断" },
+      { en: "realise", cn: "认识到" },
+      { en: "pale", cn: "苍白的" },
+      { en: "elderly", cn: "年老的" },
+      { en: "lazy", cn: "懒惰的" },
+      { en: "disagreement", cn: "分歧" },
+      { en: "pressure", cn: "压力" },
+      { en: "disappoint", cn: "使失望" },
+      { en: "completely", cn: "完全地" }
+    ],
+    phrases: [
+      { en: "at the same time", cn: "同时" },
+      { en: "share sth. with sb.", cn: "与某人分享某物" },
+      { en: "keep one's promise", cn: "守信" },
+      { en: "out of breath", cn: "上气不接下气" },
+      { en: "be cross with sb.", cn: "对某人生气" },
+      { en: "be proud of sb.", cn: "为某人骄傲" },
+      { en: "stay in touch with", cn: "保持联系" },
+      { en: "peer pressure", cn: "同辈压力" },
+      { en: "be left out", cn: "被冷落" },
+      { en: "try out for", cn: "参加选拔" },
+      { en: "can't help doing sth.", cn: "忍不住做某事" },
+      { en: "fall in love with", cn: "爱上" }
+    ]
+  },
+  unit3: {
+    words: [
+      { en: "director", cn: "导演" },
+      { en: "drama", cn: "戏剧" },
+      { en: "leader", cn: "领导者" },
+      { en: "role", cn: "角色" },
+      { en: "silence", cn: "沉默" },
+      { en: "awful", cn: "糟糕的" },
+      { en: "teamwork", cn: "团队合作" },
+      { en: "strength", cn: "优点" },
+      { en: "weakness", cn: "弱点" },
+      { en: "confidence", cn: "自信" },
+      { en: "cooperation", cn: "合作" },
+      { en: "effort", cn: "努力" },
+      { en: "painful", cn: "痛苦的" }
+    ],
+    phrases: [
+      { en: "give advice on sth.", cn: "就…提建议" },
+      { en: "work together", cn: "一起努力" },
+      { en: "learn from", cn: "向…学习" },
+      { en: "take responsibility", cn: "承担责任" },
+      { en: "deal with", cn: "处理" },
+      { en: "be willing to do sth.", cn: "愿意做某事" },
+      { en: "work as a team", cn: "团队协作" },
+      { en: "make every effort", cn: "尽一切努力" },
+      { en: "get through the challenges", cn: "克服挑战" }
+    ]
+  }
+};
+
+let currentMode = 'all';
+let selectorCount = 0;
+let results = [];
+
+// 关闭所有下拉框
+function closeAllSelects() {
+    document.querySelectorAll('.select-options').forEach(el => {
+        el.classList.remove('open');
+        el.previousElementSibling.classList.remove('open');
+    });
+}
+
+// 点击页面其他地方关闭下拉
+document.addEventListener('click', (e) => {
+    if(!e.target.closest('.custom-select')) {
+        closeAllSelects();
+    }
+});
+
+// 创建自定义下拉框
+function createCustomSelect(options, defaultVal, id) {
+    const select = document.createElement('div');
+    select.className = 'custom-select';
+    
+    const trigger = document.createElement('div');
+    trigger.className = 'select-trigger';
+    trigger.textContent = options.find(opt => opt.value === defaultVal)?.text || options[0].text;
+    trigger.dataset.value = defaultVal;
+    trigger.id = id;
+    
+    const optionsList = document.createElement('ul');
+    optionsList.className = 'select-options';
+    
+    options.forEach(opt => {
+        const li = document.createElement('li');
+        li.className = 'select-option';
+        li.textContent = opt.text;
+        li.dataset.value = opt.value;
+        
+        li.addEventListener('click', () => {
+            trigger.textContent = opt.text;
+            trigger.dataset.value = opt.value;
+            closeAllSelects();
+        });
+        
+        optionsList.appendChild(li);
+    });
+    
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = trigger.classList.contains('open');
+        closeAllSelects();
+        
+        if(!isOpen) {
+            trigger.classList.add('open');
+            optionsList.classList.add('open');
+        }
+    });
+    
+    select.appendChild(trigger);
+    select.appendChild(optionsList);
+    return select;
+}
+
+window.onload = () => { 
+    addSelector(); 
+    addSelector(); 
+};
+
+function addSelector() {
+    const c = document.getElementById('selectorContainer');
+    const id = selectorCount++;
+    const item = document.createElement('div');
+    item.className = 'selector-item';
+    
+    // 创建两个自定义下拉框
+    const unitSelect = createCustomSelect([
+        { text: 'Unit1', value: 'unit1' },
+        { text: 'Unit2', value: 'unit2' },
+        { text: 'Unit3', value: 'unit3' }
+    ], 'unit1', `unit-${id}`);
+    
+    const typeSelect = createCustomSelect([
+        { text: '短语', value: 'phrases' },
+        { text: '单词', value: 'words' }
+    ], 'phrases', `type-${id}`);
+    
+    item.appendChild(unitSelect);
+    item.appendChild(typeSelect);
+    
+    // 添加数量输入框
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.id = `num-${id}`;
+    input.value = 5;
+    input.min = 1;
+    item.appendChild(input);
+    
+    // 添加删除按钮
+    const delBtn = document.createElement('button');
+    delBtn.className = 'del-btn';
+    delBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+    delBtn.onclick = () => delSelector(delBtn);
+    item.appendChild(delBtn);
+    
+    c.appendChild(item);
+}
+
+function delSelector(btn) {
+    const items = document.querySelectorAll('.selector-item');
+    if (items.length <= 1) return alert('至少保留一个');
+    
+    const item = btn.parentElement;
+    // 添加删除动画
+    item.style.opacity = '0';
+    item.style.transform = 'scale(0.8)';
+    item.style.height = '0';
+    item.style.margin = '0';
+    item.style.padding = '0';
+    item.style.overflow = 'hidden';
+    
+    setTimeout(() => item.remove(), 250);
+}
+
+function switchMode(m) {
+    currentMode = m;
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    renderAll();
+}
+
+function pick(arr, n) {
+    const t = [...arr];
+    const res = [];
+    for (let i=0; i<n; i++) {
+        const idx = Math.floor(Math.random()*t.length);
+        res.push(t.splice(idx,1)[0]);
+    }
+    return res;
+}
+
+function renderItem(item) {
+    if (currentMode === 'en') return item.en;
+    if (currentMode === 'cn') return item.cn;
+    return `${item.en} — ${item.cn}`;
+}
+
+function renderAll() {
+    const wrap = document.getElementById('resultWrapper');
+    wrap.innerHTML = results.map((r, i) => `
+        <div class="unit-box" style="animation-delay: ${i*0.1}s">
+            <div class="unit-title">${r.name}（${r.count}个）</div>
+            ${r.list.map((x, idx) => `<div class="phrase-item" style="animation-delay: ${idx*0.05}s">${renderItem(x)}</div>`).join('')}
+        </div>
+    `).join('');
+}
+
+function validNum(v, max) {
+    let n = parseInt(v) || 1;
+    return Math.max(1, Math.min(n, max));
+}
+
+function startDraw() {
+    results = [];
+    document.querySelectorAll('.selector-item').forEach(item => {
+        const unit = item.querySelector('.custom-select:nth-child(1) .select-trigger').dataset.value;
+        const type = item.querySelector('.custom-select:nth-child(2) .select-trigger').dataset.value;
+        const val = item.querySelector('input').value;
+        const data = unitData[unit][type];
+        const n = validNum(val, data.length);
+        results.push({
+            name: `${unit.replace('unit','Unit')}·${type==='words'?'单词':'短语'}`,
+            count: n,
+            list: pick(data, n)
+        });
+    });
+    renderAll();
+}
+</script>
+</body>
+</html>
