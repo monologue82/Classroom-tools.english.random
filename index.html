@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
     <style>
         * {
             margin: 0;
@@ -25,25 +25,6 @@
             overflow-x: hidden;
         }
         
-        .cf-turnstile-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: #fafafa;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 9999;
-        }
-        
-        .main-content.hidden {
-            display: none;
-        }
-
         body::before,
         body::after {
             content: '';
@@ -471,11 +452,7 @@
 </head>
 
 <body>
-    <div id="cf-turnstile-wrapper" class="cf-turnstile-container">
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAADIqAuHMoQzLsZOVarVcqa9qJ-4" data-callback="onTurnstileSuccess"></div>
-    </div>
-    
-    <div class="main-content hidden">
+    <div class="main-content">
         <div class="bg-shape shape1"></div>
         <div class="bg-shape shape2"></div>
 
@@ -498,12 +475,6 @@
     </div>
 
 <script>
-    // Cloudflare Turnstile验证成功回调
-    function onTurnstileSuccess(token) {
-        document.getElementById('cf-turnstile-wrapper').style.display = 'none';
-        document.querySelector('.main-content').classList.remove('hidden');
-    }
-
 const unitData = {
   unit1: {
     words: [
